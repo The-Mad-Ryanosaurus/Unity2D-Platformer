@@ -10,6 +10,14 @@ public class Camera_Controller : MonoBehaviour
     public float offsetSmoothing;
     private Vector3 playerPosition;
 
+    public Transform target;
+    // Bottom left corner position
+    [SerializeField]
+    public Vector2 minPosition;
+    // Top right corner position
+    [SerializeField]
+    public Vector2 maxPosition;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -25,18 +33,34 @@ public class Camera_Controller : MonoBehaviour
 
 
         //Local Scale
+        // Old method for the camera
         playerPosition = new Vector3(player.transform.position.x, player.transform.position.y, transform.position.z);
+
+        // New method for the camera
+        Vector3 targetPosition = new Vector3(target.position.x, target.position.y, transform.position.z);
 
         if(player.transform.localScale.x > 0f)
         {
-            playerPosition = new Vector3(playerPosition.x + offset, playerPosition.y + 1, playerPosition.z);
+            playerPosition = new Vector3(playerPosition.x + offset, playerPosition.y, playerPosition.z);
+
+            targetPosition.x = Mathf.Clamp(targetPosition.x, minPosition.x, maxPosition.x);
+            targetPosition.y = Mathf.Clamp(targetPosition.y +1, minPosition.y, maxPosition.y);
+
+            
         }
         else
         {
-            playerPosition = new Vector3(playerPosition.x - offset, playerPosition.y + 1, playerPosition.z);
+            playerPosition = new Vector3(playerPosition.x - offset, playerPosition.y, playerPosition.z);
+
+            targetPosition.x = Mathf.Clamp(targetPosition.x, minPosition.x, maxPosition.x);
+            targetPosition.y = Mathf.Clamp(targetPosition.y +1 , minPosition.y, maxPosition.y);
+
+            
         }
 
         transform.position = Vector3.Lerp(transform.position, playerPosition, offsetSmoothing * Time.deltaTime);
+
+        transform.position = Vector3.Lerp(transform.position, targetPosition, offsetSmoothing);
         
     }
 }

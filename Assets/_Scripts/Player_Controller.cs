@@ -23,13 +23,22 @@ public class Player_Controller : MonoBehaviour
     public float xBounds = 46.16f, yBounds = 13.127f;
 
     [SerializeField]
-    private Rigidbody2D player;
+    public Rigidbody2D player;
+
+    // Records position of player spawn point(s)
+    private Vector3 respawnPoint;
+    // Links script to falldamage tag in scene. empty object follows player
+    [SerializeField]
+    public GameObject fallDamage;
 
     // Start is called before the first frame update
     void Start()
     {
         player.GetComponent<Rigidbody2D>();    
         playerAnimation = GetComponent<Animator>();
+
+        // Stores position of player at start of game. Respanws player back to this position when fall out of scene 
+        respawnPoint = transform.position;
     }
 
     // Update is called once per frame
@@ -37,12 +46,18 @@ public class Player_Controller : MonoBehaviour
     {
         Move();
         Jump();
+        
+
+       
 
         // Get velocity of player on x axis
         // Mathf.Abs takes velocity on x axis and regardless of positive or negative (as direction is set) velocity and speed will still stay positive and player can move left
         playerAnimation.SetFloat("Speed", Mathf.Abs(player.velocity.x));
         // Checks if player is on the ground for animations
         playerAnimation.SetBool("Grounded", isGrounded);
+
+        // Moves fall damage empty object to follow player on x axis, y axis stays the same
+        fallDamage.transform.position = new Vector2(transform.position.x, fallDamage.transform.position.y);
 
 
 
@@ -52,6 +67,8 @@ public class Player_Controller : MonoBehaviour
     {
         // Finds the empty object (groundChecker) and checks the radius of it to see if touching ground and if the layer the player is on is ground
         isGrounded = Physics2D.OverlapCircle(groundedPlayerChecker.position, groundedPlayerRadius, groundLayer);
+
+        //Debug.Log($"{groundedPlayerChecker.position},\t{groundedPlayerRadius}.\t{groundLayer}");
 
         // If space is pressed AND the player is on ground, jump enabled
         if(Input.GetButtonDown("Jump") && isGrounded)
@@ -77,13 +94,18 @@ public class Player_Controller : MonoBehaviour
             transform.localScale = new Vector2(-0.5f, 0.5f);
         }
 
-        // transform.position += new Vector3(direction * runSpeed * Time.deltaTime, 0);
-        // transform.position = new Vector3(Mathf.Clamp(transform.position.x, -xBounds, xBounds),
-        //                                 Mathf.Clamp(transform.position.y, -yBounds, yBounds), 
-        //                                 transform.position.z);
-
-
-
-        
     }
+
+    //When player collides with DeathDetector -> respawn
+    public void OnTriggerEnter2D(Collider2D collision)
+    {
+        Debug.Log("Got Here");
+        if(collision.tag == "FallDamage")
+        {
+            Debug.Log("And Here");
+            transform.position = respawnPoint;
+        }
+    }
+
+
 }
