@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - FallDamage
+  - checkpoint
   layers:
   - Default
   - TransparentFX
@@ -48,12 +49,21 @@ TagManager:
   - name: Foreground
     uniqueID: 2543350833
     locked: 0
-  - name: Scenery
+  - name: Scenery_Back
     uniqueID: 2514234009
+    locked: 0
+  - name: Scenery_Front
+    uniqueID: 1046160323
     locked: 0
   - name: Playerbody
     uniqueID: 1173287657
     locked: 0
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: front_scenery
+    uniqueID: 1620443205
+    locked: 0
+  - name: front
+    uniqueID: 771300683
     locked: 0

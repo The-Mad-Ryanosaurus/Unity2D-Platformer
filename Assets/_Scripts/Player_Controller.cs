@@ -99,11 +99,15 @@ public class Player_Controller : MonoBehaviour
     //When player collides with DeathDetector -> respawn
     public void OnTriggerEnter2D(Collider2D collision)
     {
-        Debug.Log("Got Here");
+       // Debug.Log("Got Here");
         if(collision.tag == "FallDamage")
         {
-            Debug.Log("And Here");
+            // Debug.Log("And Here");
             transform.position = respawnPoint;
+        }
+        else if(collision.tag == "checkpoint")
+        {
+            respawnPoint = transform.position;
         }
     }
 
