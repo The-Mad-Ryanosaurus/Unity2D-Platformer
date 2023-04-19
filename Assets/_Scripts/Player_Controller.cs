@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Player_Controller : MonoBehaviour
 {
@@ -86,12 +87,12 @@ public class Player_Controller : MonoBehaviour
         {
             player.velocity = new Vector2(direction * runSpeed, player.velocity.y);
             // Direction Player Faces
-            transform.localScale = new Vector2(0.5f, 0.5f);
+            transform.localScale = new Vector2(0.8f, 0.8f);
         }
         else if(direction < 0f)
         {
             player.velocity = new Vector2(direction * runSpeed, player.velocity.y);
-            transform.localScale = new Vector2(-0.5f, 0.5f);
+            transform.localScale = new Vector2(-0.8f, 0.8f);
         }
 
     }
@@ -107,6 +108,19 @@ public class Player_Controller : MonoBehaviour
         }
         else if(collision.tag == "checkpoint")
         {
+            respawnPoint = transform.position;
+        }
+
+        // Level Changes
+        else if(collision.tag == "TowerEntrance")
+        {
+            // Scene Manager loads scene at index 1 for tag that = "NextLevel"
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+            respawnPoint = transform.position;
+        }
+        else if(collision.tag == "TowerTop")
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 1);
             respawnPoint = transform.position;
         }
     }

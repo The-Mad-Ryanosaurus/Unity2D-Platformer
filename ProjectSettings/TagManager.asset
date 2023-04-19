@@ -6,6 +6,10 @@ TagManager:
   tags:
   - FallDamage
   - checkpoint
+  - NextLevel
+  - PreviousLevel
+  - TowerEntrance
+  - TowerTop
   layers:
   - Default
   - TransparentFX
