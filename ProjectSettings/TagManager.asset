@@ -10,6 +10,11 @@ TagManager:
   - PreviousLevel
   - TowerEntrance
   - TowerTop
+  - Coin
+  - Key
+  - Spikes
+  - Spider
+  - WeakPoint
   layers:
   - Default
   - TransparentFX

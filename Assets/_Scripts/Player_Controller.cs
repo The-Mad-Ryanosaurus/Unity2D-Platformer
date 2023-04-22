@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class Player_Controller : MonoBehaviour
 {
@@ -32,6 +33,18 @@ public class Player_Controller : MonoBehaviour
     [SerializeField]
     public GameObject fallDamage;
 
+    public Text scoreText;
+
+    [SerializeField]
+    private Animator Player_Sprite;
+    private Animator Enemy_Sprite;
+
+    [SerializeField]
+    private string Player_Die = "Player_Die";
+    private string Spider_Die = "Spider_Die";
+
+    private bool isAlive = true;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -40,6 +53,9 @@ public class Player_Controller : MonoBehaviour
 
         // Stores position of player at start of game. Respanws player back to this position when fall out of scene 
         respawnPoint = transform.position;
+
+        // CONVERTS SCORE TO STRING TO DISPLAY IN UI 
+        scoreText.text = "Score: "  +  Score.totalScore.ToString();
     }
 
     // Update is called once per frame
@@ -47,9 +63,6 @@ public class Player_Controller : MonoBehaviour
     {
         Move();
         Jump();
-        
-
-       
 
         // Get velocity of player on x axis
         // Mathf.Abs takes velocity on x axis and regardless of positive or negative (as direction is set) velocity and speed will still stay positive and player can move left
@@ -60,12 +73,31 @@ public class Player_Controller : MonoBehaviour
         // Moves fall damage empty object to follow player on x axis, y axis stays the same
         fallDamage.transform.position = new Vector2(transform.position.x, fallDamage.transform.position.y);
 
+        if(HealthSystem.maxHealth <= 0)
+        {
+            StartCoroutine(LoadSceneAfterDelay());
+        }
+        IEnumerator LoadSceneAfterDelay()
+        {
+        yield return new WaitForSeconds(3.0f);
+        SceneManager.LoadScene(3);
+        }
 
+        if(SceneManager.GetActiveScene().name == "DeathScreen")
+        {
+            Debug.Log("HELLO");
+            HealthSystem.maxHealth = 6;
+            Score.totalScore = 0;
+        }
+
+        
+        
 
     }
 
     public void Jump()
     {
+        if (!isAlive) return;
         // Finds the empty object (groundChecker) and checks the radius of it to see if touching ground and if the layer the player is on is ground
         isGrounded = Physics2D.OverlapCircle(groundedPlayerChecker.position, groundedPlayerRadius, groundLayer);
 
@@ -80,8 +112,8 @@ public class Player_Controller : MonoBehaviour
 
     public void Move()
     {
+        if (!isAlive) return;
         direction = Input.GetAxis("Horizontal");
-        //Debug.Log(direction);
 
         if(direction > 0f)
         {
@@ -97,13 +129,12 @@ public class Player_Controller : MonoBehaviour
 
     }
 
-    //When player collides with DeathDetector -> respawn
+
+    // CODE FOR ALL COLLISIONS, DAMAGE/RESPAWN, SCENE CHANGES AND COIN COLLECTION/SCORE INCREASE 
     public void OnTriggerEnter2D(Collider2D collision)
     {
-       // Debug.Log("Got Here");
         if(collision.tag == "FallDamage")
         {
-            // Debug.Log("And Here");
             transform.position = respawnPoint;
         }
         else if(collision.tag == "checkpoint")
@@ -111,8 +142,8 @@ public class Player_Controller : MonoBehaviour
             respawnPoint = transform.position;
         }
 
-        // Level Changes
-        else if(collision.tag == "TowerEntrance")
+        // LEVEL/SCENE CHANGES
+        else if(collision.tag == "NextLevel")
         {
             // Scene Manager loads scene at index 1 for tag that = "NextLevel"
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
@@ -123,7 +154,57 @@ public class Player_Controller : MonoBehaviour
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 1);
             respawnPoint = transform.position;
         }
+        
+
+        // COIN COLLECTION AND SCORE INCREASE
+        else if(collision.tag == "Coin")
+        {
+            // DOES NOT WORK FOR SCENE CHANGES
+            // score += 1;
+            // Debug.Log(score);
+            
+            
+            // WORKS WITH SCENE CHANGES
+            Score.totalScore += 1;
+            //DISPLAYS SCORE IN UI 
+            scoreText.text = "Score: "  +  Score.totalScore.ToString();
+            // DISABLES COIN ON COLLISION
+            collision.gameObject.SetActive(false);
+        }
+      
     }
 
+    //PLAYER DAMAGE AND ENEMIES
+     private void OnCollisionEnter2D(Collision2D collision) 
+    {
 
+        foreach(ContactPoint2D contact in collision.contacts)
+        {
+            if(contact.collider.CompareTag("Spikes"))
+            {
+                HealthSystem.maxHealth -= 6;
+
+                if(HealthSystem.maxHealth <= 0)
+                {
+                    isAlive = false;
+                    Player_Sprite.Play(Player_Die, 0, 0.0f);
+                }
+            }
+        }
+       
+        foreach(ContactPoint2D contact in collision.contacts)
+        {
+            if(contact.collider.CompareTag("Spider"))
+            {
+                HealthSystem.maxHealth -= 2;
+
+                if(HealthSystem.maxHealth <= 0)
+                {
+                    isAlive = false;
+                    Player_Sprite.Play(Player_Die, 0, 0.0f);
+                }
+            }
+        }
+    }
+    
 }

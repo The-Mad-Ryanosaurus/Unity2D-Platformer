@@ -6,9 +6,15 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/MainMenu.unity
+    guid: 57ab7d64c7ad228488533be56915b52e
+  - enabled: 1
     path: Assets/Scenes/Level 1.unity
     guid: 2cda990e2423bbf4892e6590ba056729
   - enabled: 1
     path: Assets/Scenes/Level 1 Tower.unity
     guid: 640e34372643e3d4997180a166790809
+  - enabled: 1
+    path: Assets/Scenes/DeathScreen.unity
+    guid: 5057efb9089fb9f409ac36127794feed
   m_configObjects: {}
